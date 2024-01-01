@@ -2,7 +2,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_app/pages/register.page.dart';
-import 'package:recipe_app/utlis/images.utlis.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -86,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.red,
                             ),
                             Image.asset("images/pic(${i}).png",
-                                fit: BoxFit.cover)
+                                fit: BoxFit.cover),
                           ],
                         )),
                   );
