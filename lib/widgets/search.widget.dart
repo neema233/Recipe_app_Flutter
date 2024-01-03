@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../utlis/colors_and_text.utlis.dart';
 
 class Search extends StatelessWidget {
@@ -27,7 +26,7 @@ class Search extends StatelessWidget {
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.all(15),
                 prefixIcon: Icon(
-                  Icons.search_outlined,
+                  Icons.search,
                   color: Color(ColorsConst.containerBackgroundColor),
                 ),
                 hintText: "Search for recipes",

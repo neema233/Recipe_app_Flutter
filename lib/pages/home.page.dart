@@ -4,16 +4,14 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
-import 'package:recipe_app/pages/register.page.dart';
+import 'package:get_it/get_it.dart';
 import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
-import 'package:recipe_app/utlis/images.utlis.dart';
 import 'package:recipe_app/utlis/numbers.utlis.dart';
 import 'package:recipe_app/widgets/favourite.widget.dart';
 import 'package:recipe_app/widgets/section_header.widget.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/ad.models.dart';
 import 'package:recipe_app/models/recipe.models.dart';
-
 import '../widgets/ratingbar.widget.dart';
 import '../widgets/search.widget.dart';
 
@@ -63,14 +61,15 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            //search bar
+            //list bar
             Padding(
               padding: const EdgeInsets.fromLTRB(Numbers.appHorizontalPadding,
                   Numbers.appVerticalPadding, Numbers.appHorizontalPadding, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.notes)),
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.notes_rounded)),
                   IconButton(
                       onPressed: () {},
                       icon: const Icon(
@@ -89,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Bonjour, $finalName",
+                        "Bonjour, ${GetIt.I.get<SharedPreferences>().getString('FullName')}",
                         style: const TextStyle(
                             color: Color(ColorsConst.containerBackgroundColor),
                             fontFamily: 'Hellix',
@@ -117,95 +116,98 @@ class _HomePageState extends State<HomePage> {
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                Column(
-                  children: [
-                    CarouselSlider(
-                      carouselController: carouselControllerEx,
-                      options: CarouselOptions(
-                          height: 250.0,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 3),
-                          viewportFraction: .75,
-                          enlargeStrategy: CenterPageEnlargeStrategy.height,
-                          enlargeCenterPage: true,
-                          enlargeFactor: .3,
-                          onPageChanged: (index, _) {
-                            setState(() {});
-                            sliderIndex = index;
-                            print(recipeList);
-                          }),
-                      items: recipeList.map((Recipes recipe) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              width: 180,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              height: 600,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: const Color(0xFFF7F8FC)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FavoriteIconButton(isFavorite: isFavorite),
-                                    Expanded(
-                                      child: Image.asset(recipe.image!,
-                                          fit: BoxFit.cover),
-                                    ),
-                                    const SizedBox(),
-                                    Text(
-                                      "${recipe.meal_type}",
-                                      style: StyleCons.dishTypeText,
-                                    ),
-                                    Text(
-                                      "${recipe.title}",
-                                      style: StyleCons.dishNameText,
-                                    ),
-                                    RatingBars(initrate: recipe.rating!),
-                                    const SizedBox(
-                                      height: 3,
-                                    ),
-                                    Text(
-                                      "${recipe.calories} Calories",
-                                      style: StyleCons.caloriesText,
-                                    ),
-                                    const SizedBox(
-                                      height: 4,
-                                    ),
-                                    Row(children: [
-                                      const Icon(
-                                        Icons.access_time_outlined,
-                                        color: Color(ColorsConst
-                                            .containerBackgroundColor),
-                                        size: 15,
+                recipeList.isEmpty
+                    ? const CircularProgressIndicator(
+                        color: Color(ColorsConst.mainColor),
+                        strokeWidth: 2,
+                      )
+                    : CarouselSlider(
+                        carouselController: carouselControllerEx,
+                        options: CarouselOptions(
+                            height: 250.0,
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 3),
+                            viewportFraction: .75,
+                            enlargeStrategy: CenterPageEnlargeStrategy.height,
+                            enlargeCenterPage: true,
+                            enlargeFactor: .3,
+                            onPageChanged: (index, _) {
+                              setState(() {});
+                              sliderIndex = index;
+                              print(recipeList);
+                            }),
+                        items: recipeList.map((Recipes recipe) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                width: 180,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                height: 600,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: const Color(0xFFF7F8FC)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      FavoriteIconButton(
+                                          isFavorite: isFavorite),
+                                      Expanded(
+                                        child: Image.asset(recipe.image!,
+                                            fit: BoxFit.cover),
+                                      ),
+                                      const SizedBox(),
+                                      Text(
+                                        "${recipe.meal_type}",
+                                        style: StyleCons.dishTypeText,
                                       ),
                                       Text(
-                                        " ${recipe.prep_time} mins",
-                                        style: StyleCons.serviceText,
+                                        "${recipe.title}",
+                                        style: StyleCons.dishNameText,
+                                      ),
+                                      RatingBars(initrate: recipe.rating!),
+                                      const SizedBox(
+                                        height: 3,
+                                      ),
+                                      Text(
+                                        "${recipe.calories} Calories",
+                                        style: StyleCons.caloriesText,
                                       ),
                                       const SizedBox(
-                                        width: 10,
+                                        height: 4,
                                       ),
-                                      const Icon(
-                                        Icons.room_service_outlined,
-                                        color: Color(ColorsConst
-                                            .containerBackgroundColor),
-                                        size: 15,
-                                      ),
-                                      Text("${recipe.serving} Serving",
-                                          style: StyleCons.serviceText)
-                                    ])
-                                  ],
-                                ),
-                              )),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+                                      Row(children: [
+                                        const Icon(
+                                          Icons.access_time_outlined,
+                                          color: Color(ColorsConst
+                                              .containerBackgroundColor),
+                                          size: 15,
+                                        ),
+                                        Text(
+                                          " ${recipe.prep_time} mins",
+                                          style: StyleCons.serviceText,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        const Icon(
+                                          Icons.room_service_outlined,
+                                          color: Color(ColorsConst
+                                              .containerBackgroundColor),
+                                          size: 15,
+                                        ),
+                                        Text("${recipe.serving} Serving",
+                                            style: StyleCons.serviceText)
+                                      ])
+                                    ],
+                                  ),
+                                )),
+                          );
+                        }).toList(),
+                      ),
                 Padding(
                   padding: const EdgeInsets.all(Numbers.appVerticalPadding),
                   child: Row(

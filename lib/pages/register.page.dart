@@ -1,12 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:recipe_app/pages/home.page.dart';
 import 'package:recipe_app/pages/sign_in.page.dart';
-import 'package:recipe_app/services/prefrences.services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utlis/images.utlis.dart';
-
-String? finalName;
 
 class Register_Page extends StatefulWidget {
   @override
@@ -17,10 +16,10 @@ class _Register_PageState extends State<Register_Page> {
   late TextEditingController fullnameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
-
   late GlobalKey<FormState> fromKey;
   static final RegExp nameRegExp = RegExp('[a-zA-Z]');
   bool obsecureText = true;
+
   @override
   void initState() {
     emailController = TextEditingController();
@@ -232,16 +231,20 @@ class _Register_PageState extends State<Register_Page> {
           minWidth: 250,
           color: Color(0xFFF55A00),
           onPressed: () async {
-            if (fromKey.currentState?.validate() ?? false) {
-              await PrefrencesService.prefs?.setBool('isLogin', true);
-              PrefrencesService.prefs
-                  ?.setString('fullname', fullnameController.text);
-              var obtainedName = PrefrencesService.prefs?.getString('fullname');
-              finalName = obtainedName;
+            if ((fromKey.currentState?.validate() ?? false)) {
+              GetIt.I.get<SharedPreferences>().setBool('isLogin', true);
+              GetIt.I
+                  .get<SharedPreferences>()
+                  .setString('FullName', fullnameController.text);
+
               Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => HomePage()));
+                  context, MaterialPageRoute(builder: (_) => const HomePage()));
             }
           },
+          //  PrefrencesService.prefs?.setString('fullname', fullnameController.text);
+          //var obtainedName = PrefrencesService.prefs?.getString('fullname');
+          //finalName = obtainedName;
+
           child: Text(
             'Register',
             style: TextStyle(

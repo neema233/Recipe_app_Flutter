@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:recipe_app/pages/splash.page.dart';
-import 'package:recipe_app/services/prefrences.services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   try {
-    PrefrencesService.prefs = await SharedPreferences.getInstance();
+    var preference = await SharedPreferences.getInstance();
 
-    if (PrefrencesService.prefs != null) {
-      print(
-          '========================= prefrences init Successfully ========================');
-    }
+    GetIt.I.registerSingleton<SharedPreferences>(preference);
   } catch (e) {
+    // ignore: avoid_print
     print(
+        // ignore: unnecessary_brace_in_string_interps
         '=========================Error In init Prefrences ${e}========================');
   }
+
   runApp(const MyApp());
 }
 
