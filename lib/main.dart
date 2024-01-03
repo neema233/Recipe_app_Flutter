@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
     PrefrencesService.prefs = await SharedPreferences.getInstance();
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashPage(),
+      // ignore: avoid_print
     );
   }
 }

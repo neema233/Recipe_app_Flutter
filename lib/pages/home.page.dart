@@ -1,9 +1,21 @@
+import 'dart:convert';
+
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/services.dart';
 import 'package:recipe_app/pages/register.page.dart';
+import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
 import 'package:recipe_app/utlis/images.utlis.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:recipe_app/utlis/numbers.utlis.dart';
+import 'package:recipe_app/widgets/favourite.widget.dart';
+import 'package:recipe_app/widgets/section_header.widget.dart';
+
+import '../models/ad.models.dart';
+import 'package:recipe_app/models/recipe.models.dart';
+
+import '../widgets/ratingbar.widget.dart';
+import '../widgets/search.widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +27,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var sliderIndex = 0;
   var currentindex = 0;
-  CarouselController CarouselControllerEx = CarouselController();
+  CarouselController carouselControllerEx = CarouselController();
+
+  List<Ad> adsList = [];
+
+  void getAds() async {
+    var adsData = await rootBundle.loadString('assets/data/sample.json');
+    var dataDecoded =
+        List<Map<String, dynamic>>.from(jsonDecode(adsData)['ads']);
+    adsList = dataDecoded.map((e) => Ad.fromJson(e)).toList();
+    setState(() {});
+  }
+
+  List<Recipes> recipeList = [];
+
+  void getRecipe() async {
+    var recipesData = await rootBundle.loadString('assets/data/sample.json');
+    var data2Decoded =
+        List<Map<String, dynamic>>.from(jsonDecode(recipesData)['recipes']);
+    recipeList = data2Decoded.map((e) => Recipes.fromJson(e)).toList();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getAds();
+    getRecipe();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var isFavorite = false;
@@ -23,12 +63,14 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
+            //search bar
             Padding(
-              padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+              padding: const EdgeInsets.fromLTRB(Numbers.appHorizontalPadding,
+                  Numbers.appVerticalPadding, Numbers.appHorizontalPadding, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.notes)),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.notes)),
                   IconButton(
                       onPressed: () {},
                       icon: const Icon(
@@ -38,249 +80,162 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            // Greating user,Intro,Section1
             Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(30),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    "  Bonjour, $finalName",
-                    style: TextStyle(
-                        color: Color(0XFFB2B7C6),
-                        fontFamily: 'Hellix',
-                        fontSize: 12),
-                  ),
-                  SizedBox(),
-                  Text(
-                    " What would you like to cook \n  today?",
-                    style: TextStyle(fontFamily: "AbrilFatface", fontSize: 20),
-                  ),
-                  SizedBox(),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Container(
-                              height: 30,
-                              padding: EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFF7F8FC),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.all(15),
-                                  prefixIcon: Icon(
-                                    Icons.search_outlined,
-                                    color: Color(0xFFB2B7C6),
-                                  ),
-                                  hintText: "Search for recipes",
-                                  hintStyle: TextStyle(
-                                      fontSize: 12, color: Color(0xFFB2B7C6)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF7F8FC),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: IconButton(
-                                icon: Icon(Icons.filter_list),
-                                onPressed: () {}),
-                          )
-                        ],
-                      )),
-                  SizedBox(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Today Fresh Recipes',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      SizedBox(),
-                      Text(
-                        'See All',
-                        style: TextStyle(
-                            color: Colors.red,
+                        "Bonjour, $finalName",
+                        style: const TextStyle(
+                            color: Color(ColorsConst.containerBackgroundColor),
                             fontFamily: 'Hellix',
-                            fontSize: 14),
-                      )
+                            fontSize: 12),
+                      ),
                     ],
                   ),
+                  const SizedBox(),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "What would you like to cook \ntoday?",
+                        style: StyleCons.introText,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(),
+                  const Search(),
+                  const SizedBox(),
+                  const SectionHeader(sectionName: "Today Fresh Recipes")
                 ],
               ),
             ),
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                CarouselSlider(
-                  carouselController: CarouselControllerEx,
-                  options: CarouselOptions(
-                      height: 250.0,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 2),
-                      viewportFraction: .75,
-                      enlargeStrategy: CenterPageEnlargeStrategy.height,
-                      enlargeCenterPage: true,
-                      enlargeFactor: .3,
-                      onPageChanged: (index, _) {
-                        setState(() {});
-                        sliderIndex = index;
-                      }),
-                  items: [1, 2, 3].map((i) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                          width: 180,
-                          margin: EdgeInsets.symmetric(horizontal: 5.0),
-                          height: 600,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Color(0xFFF7F8FC)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border, // Toggle icons
-                                    color: isFavorite
-                                        ? Colors.red
-                                        : null, // Set color for filled state
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      isFavorite =
-                                          !isFavorite; // Toggle state on click
-                                    });
-                                  },
+                Column(
+                  children: [
+                    CarouselSlider(
+                      carouselController: carouselControllerEx,
+                      options: CarouselOptions(
+                          height: 250.0,
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 3),
+                          viewportFraction: .75,
+                          enlargeStrategy: CenterPageEnlargeStrategy.height,
+                          enlargeCenterPage: true,
+                          enlargeFactor: .3,
+                          onPageChanged: (index, _) {
+                            setState(() {});
+                            sliderIndex = index;
+                            print(recipeList);
+                          }),
+                      items: recipeList.map((Recipes recipe) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                              width: 180,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              height: 600,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: const Color(0xFFF7F8FC)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FavoriteIconButton(isFavorite: isFavorite),
+                                    Expanded(
+                                      child: Image.asset(recipe.image!,
+                                          fit: BoxFit.cover),
+                                    ),
+                                    const SizedBox(),
+                                    Text(
+                                      "${recipe.meal_type}",
+                                      style: StyleCons.dishTypeText,
+                                    ),
+                                    Text(
+                                      "${recipe.title}",
+                                      style: StyleCons.dishNameText,
+                                    ),
+                                    RatingBars(initrate: recipe.rating!),
+                                    const SizedBox(
+                                      height: 3,
+                                    ),
+                                    Text(
+                                      "${recipe.calories} Calories",
+                                      style: StyleCons.caloriesText,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Row(children: [
+                                      const Icon(
+                                        Icons.access_time_outlined,
+                                        color: Color(ColorsConst
+                                            .containerBackgroundColor),
+                                        size: 15,
+                                      ),
+                                      Text(
+                                        " ${recipe.prep_time} mins",
+                                        style: StyleCons.serviceText,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Icon(
+                                        Icons.room_service_outlined,
+                                        color: Color(ColorsConst
+                                            .containerBackgroundColor),
+                                        size: 15,
+                                      ),
+                                      Text("${recipe.serving} Serving",
+                                          style: StyleCons.serviceText)
+                                    ])
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Image.asset("images/pic(${i}).png",
-                                      fit: BoxFit.cover),
-                                ),
-                                SizedBox(),
-                                Text(
-                                  "Breakfast",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix",
-                                      fontSize: 10,
-                                      color: Color(0xFF128FAE)),
-                                ),
-                                Text(
-                                  "${Recipe.ImageName[i - 1]}",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix", fontSize: 14),
-                                ),
-                                RatingBar.builder(
-                                  itemSize: 15,
-                                  initialRating: Recipe.RatingNum[i -
-                                      1], // Initial rating (can be fractional)
-                                  minRating: 1, // Minimum allowed rating
-                                  direction: Axis
-                                      .horizontal, // Direction of the rating bar
-                                  allowHalfRating: true, // Allow half ratings
-                                  itemCount: 5, // Number of stars
-                                  itemBuilder: (context, _) => Icon(
-                                      Icons.star_rounded,
-                                      color: Color(
-                                          0xFFF55A00)), // Star widget builder
-                                  onRatingUpdate: (rating) {
-                                    // Handle rating updates here
-                                    print("New rating: $rating");
-                                  },
-                                ),
-                                SizedBox(
-                                  height: 3,
-                                ),
-                                Text(
-                                  "${Recipe.Calorirs[i - 1]} Calories",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix",
-                                      fontSize: 8,
-                                      color: Color(0xFFF55A00),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 4,
-                                ),
-                                Row(children: [
-                                  Icon(
-                                    Icons.access_time_outlined,
-                                    color: Color(0xFFB2B7C6),
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    " ${Recipe.Times[i - 1]} mins",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontFamily: "Hellix",
-                                        color: Color(0xFFB2B7C6)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Icon(
-                                    Icons.room_service_outlined,
-                                    color: Color(0xFFB2B7C6),
-                                    size: 15,
-                                  ),
-                                  Text(" 1 Serving",
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontFamily: "Hellix",
-                                          color: Color(0xFFB2B7C6)))
-                                ])
-                              ],
-                            ),
-                          )),
-                    );
-                  }).toList(),
+                              )),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(Numbers.appVerticalPadding),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
                         onPressed: () {
-                          CarouselControllerEx.previousPage();
+                          carouselControllerEx.previousPage();
                           setState(() {});
                         },
-                        icon: Icon(Icons.arrow_back),
+                        icon: const Icon(Icons.arrow_back),
                       ),
                       IconButton(
                         onPressed: () {
-                          CarouselControllerEx.nextPage();
+                          carouselControllerEx.nextPage();
                           setState(() {});
                         },
-                        icon: Icon(Icons.arrow_forward),
+                        icon: const Icon(Icons.arrow_forward),
                       ),
                     ],
                   ),
                 )
               ],
             ),
-            SizedBox(),
+            const SizedBox(),
             DotsIndicator(
-              dotsCount: 3,
+              dotsCount: recipeList.length,
               position: sliderIndex.toDouble(),
               onTap: (postion) async {
-                await CarouselControllerEx.animateToPage(postion.toInt());
+                await carouselControllerEx.animateToPage(postion.toInt());
                 sliderIndex = postion.toInt();
                 currentindex = sliderIndex;
                 setState(() {});
@@ -290,130 +245,89 @@ class _HomePageState extends State<HomePage> {
                   activeSize: const Size(18.0, 9.0),
                   activeShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5.0)),
-                  activeColor: Colors.black54),
+                  activeColor: const Color(ColorsConst.mainColor)),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Expanded(
               child: ListView.separated(
-                itemCount: 3,
-                itemBuilder: (context, index) => Container(
-                    width: 180,
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
-                    height: 130,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Color(0xFFF7F8FC)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Image.asset("images/pic(${index + 3}).png",
-                                fit: BoxFit.cover),
-                          ),
-                          SizedBox(),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(),
-                                Text(
-                                  "${Recipe.DishName[index]}",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix",
-                                      fontSize: 10,
-                                      color: Color(0xFF128FAE)),
-                                ),
-                                SizedBox(),
-                                Text(
-                                  "${Recipe.ImageName[index + 2]}",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix", fontSize: 14),
-                                ),
-                                RatingBar.builder(
-                                  itemSize: 15,
-                                  initialRating: Recipe.RatingNum[
-                                      index], // Initial rating (can be fractional)
-                                  minRating: 1, // Minimum allowed rating
-                                  direction: Axis
-                                      .horizontal, // Direction of the rating bar
-                                  allowHalfRating: true, // Allow half ratings
-                                  itemCount: 5, // Number of stars
-                                  itemBuilder: (context, _) => Icon(
-                                      Icons.star_rounded,
-                                      color: Color(
-                                          0xFFF55A00)), // Star widget builder
-                                  onRatingUpdate: (rating) {
-                                    // Handle rating updates here
-                                    print("New rating: $rating");
-                                  },
-                                ),
-                                SizedBox(),
-                                Text(
-                                  "${Recipe.Calorirs[index + 2]} Calories",
-                                  style: TextStyle(
-                                      fontFamily: "Hellix",
-                                      fontSize: 8,
-                                      color: Color(0xFFF55A00),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Spacer(),
-                                Row(children: [
-                                  Icon(
-                                    Icons.access_time_outlined,
-                                    color: Color(0xFFB2B7C6),
-                                    size: 15,
-                                  ),
+                itemCount: recipeList.length,
+                itemBuilder: (context, index) {
+                  final recipecard = recipeList[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(Numbers.appHorizontalPadding),
+                    child: Container(
+                        width: 180,
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                        height: 130,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: const Color(ColorsConst.fillColor)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Image.asset("${recipecard.image}",
+                                  fit: BoxFit.cover),
+                            ),
+                            const SizedBox(),
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(),
                                   Text(
-                                    " ${Recipe.Times[index + 2]} mins",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontFamily: "Hellix",
-                                        color: Color(0xFFB2B7C6)),
+                                    "${recipecard.meal_type}",
+                                    style: StyleCons.dishTypeText,
                                   ),
-                                  SizedBox(
-                                    width: 10,
+                                  const SizedBox(),
+                                  Text(
+                                    "${recipecard.title}",
+                                    style: StyleCons.dishNameText,
                                   ),
-                                  Icon(
-                                    Icons.room_service_outlined,
-                                    color: Color(0xFFB2B7C6),
-                                    size: 15,
+                                  RatingBars(initrate: index.toDouble()),
+                                  const SizedBox(),
+                                  Text(
+                                    "${recipecard.calories} Calories",
+                                    style: StyleCons.caloriesText,
                                   ),
-                                  Text(" 1 Serving",
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontFamily: "Hellix",
-                                          color: Color(0xFFB2B7C6)))
-                                ])
-                              ],
+                                  const Spacer(),
+                                  Row(children: [
+                                    const Icon(
+                                      Icons.access_time_outlined,
+                                      color: Color(
+                                          ColorsConst.containerBackgroundColor),
+                                      size: 15,
+                                    ),
+                                    Text(
+                                      " ${recipecard.prep_time} mins",
+                                      style: StyleCons.serviceText,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.room_service_outlined,
+                                      color: Color(
+                                          ColorsConst.containerBackgroundColor),
+                                      size: 15,
+                                    ),
+                                    Text("${recipecard.serving} Serving",
+                                        style: StyleCons.serviceText)
+                                  ])
+                                ],
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border, // Toggle icons
-                              color: isFavorite
-                                  ? Colors.red
-                                  : null, // Set color for filled state
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isFavorite =
-                                    !isFavorite; // Toggle state on click
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    )),
+                            FavoriteIconButton(isFavorite: isFavorite),
+                          ],
+                        )),
+                  );
+                },
                 separatorBuilder: (context, index) =>
-                    Divider(), // Use a default divider
+                    const Divider(), // Use a default divider
               ),
             )
           ],
