@@ -20,4 +20,5 @@ samples, guidance on mobile development, and a full API reference.
 - email validator
 - carousel slider
 - dots indicator
-- flutter_rating_bar
+- flutter rating bar
+- get_it
