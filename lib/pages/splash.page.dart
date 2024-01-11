@@ -5,6 +5,8 @@ import 'package:recipe_app/pages/register.page.dart';
 import 'package:recipe_app/utlis/images.utlis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utlis/routes.utlis.dart';
+
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
@@ -22,12 +24,10 @@ class _SplashPageState extends State<SplashPage> {
   void initSplash() async {
     await Future.delayed(const Duration(seconds: 1));
     if (GetIt.I.get<SharedPreferences>().getBool('isLogin') ?? false) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => HomePage()));
       // go to home page
+      Navigator.pushNamed(context, RoutesCons.homePage);
     } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => Register_Page()));
+      Navigator.pushNamed(context, RoutesCons.registerPage);
       // go to Register page
     }
   }

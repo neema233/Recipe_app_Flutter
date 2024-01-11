@@ -39,12 +39,19 @@ class Search extends StatelessWidget {
           width: 10,
         ),
         Container(
+          height: 30,
           decoration: BoxDecoration(
             color: const Color(ColorsConst.fillColor),
             borderRadius: BorderRadius.circular(10.0),
           ),
-          child:
-              IconButton(icon: const Icon(Icons.filter_list), onPressed: () {}),
+          child: Expanded(
+            child: IconButton(
+                icon: const Icon(
+                  Icons.tune_rounded,
+                  size: 21,
+                ),
+                onPressed: () {}),
+          ),
         )
       ],
     );

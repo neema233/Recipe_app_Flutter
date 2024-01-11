@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:recipe_app/pages/home.page.dart';
 import 'package:recipe_app/pages/sign_in.page.dart';
+import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utlis/images.utlis.dart';
+import '../utlis/routes.utlis.dart';
 
 class Register_Page extends StatefulWidget {
   @override
@@ -38,45 +40,48 @@ class _Register_PageState extends State<Register_Page> {
     return Scaffold(
         body: Stack(fit: StackFit.loose, children: [
       backgroundImage(),
-      Column(
-        children: [
-          logo(),
-          SizedBox(
-            height: 20,
-          ),
-          introText(),
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Form(
-              key: fromKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FullName(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Email(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Password(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  startButton(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  account()
-                ],
-              ),
+      Container(
+        color: Colors.black38,
+        child: Column(
+          children: [
+            logo(),
+            SizedBox(
+              height: 20,
             ),
-          )
-        ],
+            introText(),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Form(
+                key: fromKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FullName(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Email(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Password(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    startButton(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    account()
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       )
     ]));
   }
@@ -149,7 +154,9 @@ class _Register_PageState extends State<Register_Page> {
               'Password',
               style: TextStyle(color: Color(0xFFB2B7C6), fontFamily: "Hellix"),
             ),
-            prefixIcon: InkWell(
+            prefixIcon: Icon(Icons.lock_outline_rounded,
+                color: Color(ColorsConst.containerBackgroundColor)),
+            suffixIcon: InkWell(
               onTap: () => toggleObsecure(),
               child: Icon(
                 obsecureText ? Icons.visibility_off : Icons.visibility,
@@ -181,8 +188,7 @@ class _Register_PageState extends State<Register_Page> {
                   color: Color(0xFFB2B7C6))),
           GestureDetector(
             onTap: () {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => Sign_In()));
+              Navigator.pushNamed(context, RoutesCons.signPage);
             },
             child: Text("Sign In.",
                 style: TextStyle(
@@ -237,14 +243,9 @@ class _Register_PageState extends State<Register_Page> {
                   .get<SharedPreferences>()
                   .setString('FullName', fullnameController.text);
 
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => const HomePage()));
+              Navigator.pushNamed(context, RoutesCons.homePage);
             }
           },
-          //  PrefrencesService.prefs?.setString('fullname', fullnameController.text);
-          //var obtainedName = PrefrencesService.prefs?.getString('fullname');
-          //finalName = obtainedName;
-
           child: Text(
             'Register',
             style: TextStyle(

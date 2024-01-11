@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_app/pages/register.page.dart';
+import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
 import 'package:recipe_app/utlis/images.utlis.dart';
+import 'package:recipe_app/utlis/numbers.utlis.dart';
+
+import '../utlis/routes.utlis.dart';
 
 class Start_Page extends StatefulWidget {
   @override
@@ -35,8 +39,7 @@ class _Start_PageState extends State<Start_Page> {
       padding: const EdgeInsets.all(30),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Sign_in()));
+          Navigator.pushNamed(context, RoutesCons.signPage);
         },
         child: Text("Sign In",
             style: TextStyle(
@@ -48,7 +51,9 @@ class _Start_PageState extends State<Start_Page> {
   Text introText() {
     return Text("Cooking Done The Easy Way",
         style: TextStyle(
-            color: Color(0xFFB2B7C6), fontFamily: 'Hellix', fontSize: 14));
+            color: Color(ColorsConst.containerBackgroundColor),
+            fontFamily: 'Hellix',
+            fontSize: 14));
   }
 
   Widget backgroundImage() {
@@ -62,7 +67,7 @@ class _Start_PageState extends State<Start_Page> {
 
   Widget logo() {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.all(Numbers.appHorizontalPadding),
       child: Center(child: Image.asset(ImagesPath.logoimage)),
     );
   }
@@ -77,10 +82,9 @@ class _Start_PageState extends State<Start_Page> {
               borderRadius: BorderRadius.all(Radius.circular(15))),
           height: 50,
           minWidth: 250,
-          color: Color(0xFFF55A00),
+          color: Color(ColorsConst.mainColor),
           onPressed: () {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => Register_Page()));
+            Navigator.pushNamed(context, RoutesCons.registerPage);
           },
           child: Text(
             'Register',

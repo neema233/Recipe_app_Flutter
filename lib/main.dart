@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:recipe_app/pages/splash.page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/app_routers.sevice.dart';
+import 'utlis/routes.utlis.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,18 +17,21 @@ void main() async {
         '=========================Error In init Prefrences ${e}========================');
   }
 
-  runApp(const MyApp());
+  runApp(MyApp(
+    appRouter: AppRouter(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AppRouter appRouter;
+  const MyApp({Key? key, required this.appRouter}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashPage(),
-      // ignore: avoid_print
+      onGenerateRoute: appRouter.generateRoute,
+      initialRoute: RoutesCons.splashPage,
     );
   }
 }

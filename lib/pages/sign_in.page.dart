@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:recipe_app/pages/home.page.dart';
 import 'package:recipe_app/pages/register.page.dart';
 import 'package:recipe_app/services/prefrences.services.dart';
+import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
 import 'package:recipe_app/utlis/images.utlis.dart';
+import 'package:recipe_app/utlis/numbers.utlis.dart';
+
+import '../utlis/routes.utlis.dart';
 
 class Sign_In extends StatefulWidget {
   @override
@@ -34,45 +38,48 @@ class _Sign_InState extends State<Sign_In> {
     return Scaffold(
         body: Stack(fit: StackFit.loose, children: [
       backgroundImage(),
-      Column(
-        children: [
-          logo(),
-          SizedBox(
-            height: 20,
-          ),
-          introText(),
-          SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Form(
-              key: fromKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Email(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Password(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  forget_pass(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Sign_inButton(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  account()
-                ],
-              ),
+      Container(
+        color: Colors.black38,
+        child: Column(
+          children: [
+            logo(),
+            SizedBox(
+              height: Numbers.appHorizontalPadding,
             ),
-          )
-        ],
+            introText(),
+            SizedBox(
+              height: Numbers.appHorizontalPadding,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Form(
+                key: fromKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Email(),
+                    SizedBox(
+                      height: Numbers.appVerticalPadding,
+                    ),
+                    Password(),
+                    SizedBox(
+                      height: Numbers.appHorizontalPadding,
+                    ),
+                    forget_pass(),
+                    SizedBox(
+                      height: Numbers.appHorizontalPadding,
+                    ),
+                    Sign_inButton(),
+                    SizedBox(
+                      height: Numbers.appHorizontalPadding,
+                    ),
+                    account()
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       )
     ]));
   }
@@ -86,7 +93,9 @@ class _Sign_InState extends State<Sign_In> {
           child: Text(
             "Forget Password?",
             style: TextStyle(
-                color: Color(0xFF128FAE), fontSize: 14, fontFamily: "Hellix"),
+                color: Color(ColorsConst.titleColor),
+                fontSize: 14,
+                fontFamily: "Hellix"),
           ),
         ),
       ],
@@ -95,21 +104,23 @@ class _Sign_InState extends State<Sign_In> {
 
   TextFormField Email() {
     return TextFormField(
-        cursorColor: Color(0xFFB2B7C6),
+        cursorColor: Color(ColorsConst.mainColor),
         style: TextStyle(color: Colors.white),
         keyboardType: TextInputType.emailAddress,
         controller: emailController,
         decoration: const InputDecoration(
           focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFF4F5052))),
-          focusColor: Color(0xFFB2B7C6),
+          focusColor: Color(ColorsConst.containerBackgroundColor),
           label: Text(
             'Email',
-            style: TextStyle(color: Color(0xFFB2B7C6), fontFamily: 'Hellix'),
+            style: TextStyle(
+                color: Color(ColorsConst.containerBackgroundColor),
+                fontFamily: 'Hellix'),
           ),
           prefixIcon: Icon(
             Icons.email,
-            color: Color(0xFFB2B7C6),
+            color: Color(ColorsConst.containerBackgroundColor),
           ),
         ),
         validator: (value) {
@@ -126,23 +137,27 @@ class _Sign_InState extends State<Sign_In> {
 
   TextFormField Password() {
     return TextFormField(
-        cursorColor: Color(0xFFB2B7C6),
+        cursorColor: Color(ColorsConst.containerBackgroundColor),
         style: TextStyle(color: Colors.white),
         obscureText: obsecureText,
         controller: passwordController,
         decoration: InputDecoration(
             focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Color(0xFF4F5052))),
-            focusColor: Color(0xFFB2B7C6),
+            focusColor: Color(ColorsConst.containerBackgroundColor),
             label: const Text(
               'Password',
-              style: TextStyle(color: Color(0xFFB2B7C6), fontFamily: "Hellix"),
+              style: TextStyle(
+                  color: Color(ColorsConst.containerBackgroundColor),
+                  fontFamily: "Hellix"),
             ),
-            prefixIcon: InkWell(
+            prefixIcon: Icon(Icons.lock_outline_rounded,
+                color: Color(ColorsConst.containerBackgroundColor)),
+            suffixIcon: InkWell(
               onTap: () => toggleObsecure(),
               child: Icon(
                 obsecureText ? Icons.visibility_off : Icons.visibility,
-                color: Color(0XFFB2B7C6),
+                color: Color(ColorsConst.containerBackgroundColor),
               ),
             )),
         validator: (value) {
@@ -167,17 +182,16 @@ class _Sign_InState extends State<Sign_In> {
               style: TextStyle(
                   fontFamily: "Hellix",
                   fontSize: 14,
-                  color: Color(0xFFB2B7C6))),
+                  color: Color(ColorsConst.containerBackgroundColor))),
           GestureDetector(
             onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => Register_Page()));
+              Navigator.pushNamed(context, RoutesCons.registerPage);
             },
             child: Text("Register.",
                 style: TextStyle(
                     fontFamily: "Hellix",
                     fontSize: 14,
-                    color: Color(0xFFF55A00))),
+                    color: Color(ColorsConst.mainColor))),
           ),
         ],
       ),
@@ -218,13 +232,12 @@ class _Sign_InState extends State<Sign_In> {
               borderRadius: BorderRadius.all(Radius.circular(15))),
           height: 50,
           minWidth: 250,
-          color: Color(0xFFF55A00),
+          color: const Color(ColorsConst.mainColor),
           onPressed: () async {
             if (fromKey.currentState?.validate() ?? false) {
               await PrefrencesService.prefs?.setBool('isLogin', true);
 
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => HomePage()));
+              Navigator.pushNamed(context, RoutesCons.homePage);
             }
           },
           child: Text(
