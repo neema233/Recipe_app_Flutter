@@ -10,14 +10,7 @@ class AppRouter {
   Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutesCons.homePage:
-        return MaterialPageRoute(
-          builder:
-              (_) => /*BlocProvider(
-            create: (BuildContext contxt) => Cubit,
-            child:*/
-                  const HomePage(),
-          //),
-        );
+        return MaterialPageRoute(builder: (_) => const HomePage());
 
       case RoutesCons.registerPage:
         return MaterialPageRoute(builder: (_) => Register_Page());
