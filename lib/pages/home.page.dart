@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:recipe_app/utlis/colors_and_text.utlis.dart';
 import 'package:recipe_app/utlis/numbers.utlis.dart';
 import 'package:recipe_app/widgets/favourite.widget.dart';
@@ -10,10 +11,10 @@ import 'package:recipe_app/widgets/section_header.widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:recipe_app/models/recipe.models.dart';
-import '../cubit/recipes_cubit.dart';
+
+import '../provider/recipes.provider.dart';
 import '../widgets/ratingbar.widget.dart';
 import '../widgets/search.widget.dart';
-import 'package:recipe_app/services/app_routers.sevice.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,134 +24,105 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final cubit = RecipeCubit();
   final _opacityController = ValueNotifier<double>(1);
+  bool isFavorite = false;
   @override
   void initState() {
-    cubit.getRecipes();
+    final provider = Provider.of<RecipeProvider>(context, listen: false);
+
+    provider.getRecipes();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: BlocBuilder<RecipeCubit, RecipeState>(
-        builder: (context, state) {
-          if (state is RecipeLoading) {
-            return const SizedBox(
-              height: 100,
-              child: CircularProgressIndicator(
-                color: Colors.amber,
-              ),
-            );
-          } else if (state is RecipeLoaded) {
-            List<Recipes> recipes = state.recipes;
-            bool isFavorite = false;
-            return Scaffold(
-              appBar: AppBar(
-                elevation: 0,
-                leading: const Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: Numbers.appHorizontalPadding),
-                  child: Icon(Icons.notes),
-                ),
-                actions: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: Numbers.appHorizontalPadding),
-                    child: Icon(
-                      Icons.notifications_outlined,
-                    ),
-                  )
-                ],
-              ),
-              body: AnimatedOpacity(
-                opacity: _opacityController.value,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: SingleChildScrollView(
-                  controller: ScrollController()
-                    ..addListener(() {
-                      final offset = 1 -
-                          (context.findRenderObject() as RenderBox)
-                                  .localToGlobal(Offset.zero)
-                                  .dy /
-                              100;
-                      _opacityController.value = offset.clamp(0, 1);
-                    }),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        Numbers.appHorizontalPadding,
-                        0,
-                        Numbers.appHorizontalPadding,
-                        Numbers.appHorizontalPadding),
-                    child: Column(
-                      children: [
-                        // Greating user,Intro,Section1
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Bonjour, ${GetIt.I.get<SharedPreferences>().getString('FullName')}",
-                              style: const TextStyle(
-                                  color: Color(
-                                      ColorsConst.containerBackgroundColor),
-                                  fontFamily: 'Hellix',
-                                  fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "What would you like to cook \ntoday?",
-                              style: StyleCons.introText,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const Search(),
-                        const SizedBox(),
-                        const SectionHeader(
-                            sectionName: "Today\'s Fresh Recipes"),
-                        RecipesPageView(
-                            recipes: recipes, isFavorite: isFavorite),
+    final provider = Provider.of<RecipeProvider>(context);
 
-                        const SizedBox(),
-                        const SizedBox(),
-                        const SectionHeader(sectionName: "Recommended"),
-                        ...List.generate(
-                            state.recipes.length,
-                            (index) => RecipeCard(
-                                recipecard: state.recipes[index],
-                                isFavorite: isFavorite)),
-                        /*Flexible(
-                          child: ListView.builder(
-                           
-                            itemCount: state.recipes.length,
-                            itemBuilder: (context, index) {
-                              final recipecard = state.recipes[index];
-                              return RecipeCard(
-                                  recipecard: recipecard, isFavorite: isFavorite);
-                            },
-                          ),
-                        ),*/
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          } else {
-            return Container();
-          }
-        },
+    return SafeArea(
+        child: Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        leading: const Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: Numbers.appHorizontalPadding),
+          child: Icon(Icons.notes),
+        ),
+        actions: const [
+          Padding(
+            padding:
+                EdgeInsets.symmetric(horizontal: Numbers.appHorizontalPadding),
+            child: Icon(
+              Icons.notifications_outlined,
+            ),
+          )
+        ],
       ),
-    );
+      body: AnimatedOpacity(
+        opacity: _opacityController.value,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: SingleChildScrollView(
+          controller: ScrollController()
+            ..addListener(() {
+              final offset = 1 -
+                  (context.findRenderObject() as RenderBox)
+                          .localToGlobal(Offset.zero)
+                          .dy /
+                      100;
+              _opacityController.value = offset.clamp(0, 1);
+            }),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(Numbers.appHorizontalPadding, 0,
+                Numbers.appHorizontalPadding, Numbers.appHorizontalPadding),
+            child: Column(
+              children: [
+                // Greating user,Intro,Section1
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Bonjour, ${GetIt.I.get<SharedPreferences>().getString('FullName')}",
+                      style: const TextStyle(
+                          color: Color(ColorsConst.containerBackgroundColor),
+                          fontFamily: 'Hellix',
+                          fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "What would you like to cook \ntoday?",
+                      style: StyleCons.introText,
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Search(),
+                const SizedBox(),
+                const SectionHeader(sectionName: "Today\'s Fresh Recipes"),
+                RecipesPageView(
+                    recipes: provider.recipes, isFavorite: isFavorite),
+
+                const SizedBox(),
+                const SizedBox(),
+                const SectionHeader(sectionName: "Recommended"),
+                ...List.generate(
+                    provider.recipes.length,
+                    (index) => RecipeCard(
+                        recipecard: provider.recipes[index],
+                        isFavorite: isFavorite)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ));
   }
 }
 

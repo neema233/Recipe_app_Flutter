@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'provider/recipes.provider.dart';
 import 'services/app_routers.sevice.dart';
 import 'utlis/routes.utlis.dart';
 
@@ -28,10 +30,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      onGenerateRoute: appRouter.generateRoute,
-      initialRoute: RoutesCons.splashPage,
+    return ChangeNotifierProvider<RecipeProvider>(
+      create: (_) => RecipeProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        onGenerateRoute: appRouter.generateRoute,
+        initialRoute: RoutesCons.splashPage,
+      ),
     );
   }
 }
